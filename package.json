@@ -1,0 +1,32 @@
+{
+  "name": "project_node_end_module",
+  "version": "1.0.0",
+  "description": "last projet pour le module node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/claude-boulay/project_node_end_module.git"
+  },
+  "author": "Claude Boulay , Steven",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/claude-boulay/project_node_end_module/issues"
+  },
+  "homepage": "https://github.com/claude-boulay/project_node_end_module#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.0",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.0",
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.5.1",
+    "zod": "^3.23.8"
+  },
+  "type": "module"
+}
