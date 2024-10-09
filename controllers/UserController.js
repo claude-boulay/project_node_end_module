@@ -37,8 +37,11 @@ export async function deleteUser(id){
     await UsersModel.findByIdAndUpdate(id, {deleteAt: new Date()  });
 }
 
-export async function updateUser(id, username, email, password){
-    const hash=bcrypt.hashSync(password, 10);
-    await UsersModel.findByIdAndUpdate(id, {username, email, password:hash});
+export async function updateUser(id,content){
+    if(content.password){
+        content.password=bcrypt.hashSync(password, 10);
+    }
+    
+    await UsersModel.findByIdAndUpdate(id, {$set: content  });
 }
 

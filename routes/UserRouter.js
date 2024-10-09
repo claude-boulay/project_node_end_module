@@ -65,7 +65,7 @@ router.put('/:id',(req,res)=>{
         res.end();  // stop the execution of the request and send a response with status code 403 (Forbidden) and a message in the response body
         return;  // exit the function immediately without executing any remaining code
     }else{
-        updateUser(req.params.id, req.body.username, req.body.email, req.body.password).then(() => {
+        updateUser(req.params.id, req.body).then(() => {
             res.status(201).send("User updated successfully");
             res.end();
         }).catch((err) => {
