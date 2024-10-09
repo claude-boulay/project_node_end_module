@@ -5,7 +5,7 @@ import YAML from 'yaml';
 import {Server} from "socket.io";
 import UserRouter from './routes/UserRouter.js';
 
-const BdUrl="mongodb+srv://ClaudeB:Cyberbouffon5@cluster0.nc5na.mongodb.net/Blogify";
+const BdUrl="mongodb+srv://ClaudeB:Cyberbouffon5@cluster0.nc5na.mongodb.net/RailRoad";
 const app = express();
 const Port =3000;
 
