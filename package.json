@@ -4,7 +4,8 @@
   "description": "last projet pour le module node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "user_test": "mocha ./test/UserTest.js",
+    "coverage": "nyc npm run test/Usertest.js"
   },
   "repository": {
     "type": "git",
@@ -18,10 +19,12 @@
   "homepage": "https://github.com/claude-boulay/project_node_end_module#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "chai": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^10.7.3",
     "mongoose": "^8.7.0",
     "multer": "^1.4.5-lts.1",
     "socket.io": "^4.8.0",
