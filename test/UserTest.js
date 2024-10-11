@@ -24,7 +24,7 @@ describe("User routes", () => {
             const response = await request.post("/RailRoad/users/register").send({
                 pseudo: "testuser",
                 email: "testuser@example.com",
-                password: "testpassword"
+                password: "Password5@"
             });
             
             expect(response.status).to.equal(201);
@@ -34,9 +34,9 @@ describe("User routes", () => {
         it("Connexion avec un utilisateur", async () => {
             const response= await request.post("/RailRoad/users/login").send({
                 email: "testuser@example.com",
-                password: "testpassword"
+                password: "Password5@"
             });
-            
+           
             expect(response.status).to.equal(200);
             expect(response.body).to.have.property("token");
         });    
@@ -50,7 +50,7 @@ describe("User routes", () => {
             // Register a user and store the token in the headers
             const response = await request.post("/RailRoad/users/register").send({
                 email: "admin@example.com",
-                password: "admin",
+                password: "Password5@",
                 pseudo: "admin",
             });
             
@@ -70,6 +70,7 @@ describe("User routes", () => {
         })
 
         it("Récupération d'un utilisateur", async () => {
+            
            const response = await request.get("/RailRoad/users/"+id).set(headers);
            expect(response.status).to.equal(200);
            expect(response.body).to.be.an("object");
@@ -82,7 +83,7 @@ describe("User routes", () => {
             const response = await request.put("/RailRoad/users/"+id).set(headers).send({
                 pseudo: "newadmin",
                 email: "newadmin@example.com",
-                password: "newpassword"
+                password: "NewPassword5@"
                 
             });
             

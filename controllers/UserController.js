@@ -6,12 +6,18 @@ import bcrypt from "bcrypt";
 export async function createUser(pseudo,email, password,role) {
     const hash=bcrypt.hashSync(password, 10);
     const user={pseudo,password:hash,email,role};
-    //attente de la création en database de l'utilisateur
-    await UsersModel.create(user)
-    //recup de l'utilisateur créé
-    let Newuser=await UsersModel.findOne({email:email})
-
-    return Newuser;
+    try {
+        //attente de la création en database de l'utilisateur
+        await UsersModel.create(user)
+        //recup de l'utilisateur créé
+        let Newuser=await UsersModel.findOne({email:email})
+        
+        return Newuser; 
+    } catch (error) {
+        
+        return false;
+    }
+   
  
 }
 

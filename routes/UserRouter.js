@@ -6,11 +6,13 @@ import { urlencoded } from 'express';
 import { authMiddleware } from '../middlewares/authMiddlewares.js';
 import { config } from 'dotenv';
 import { authOptionnelMiddlewares } from '../middlewares/authOptionnelMiddlewares.js';
+import { validUser } from '../middlewares/validationUserMiddlewares.js';
 //obtention de la clé secret du fichier.env
 const secret= config().parsed.SECRET;
 
 const router = express.Router();
 router.use(authOptionnelMiddlewares);
+router.use(validUser);
 // User routes
 router.post('/register',(req,res)=>{
     
@@ -18,27 +20,44 @@ router.post('/register',(req,res)=>{
     //si l'utilisateur est connecté et que l'utilisateur est admin, il peut créer un nouvel utilisateur avec le role désirée
     //sinon l'utilisateur crée serat un utilisateur ordinaire
     if(req.user!=false && req.user.role==='admin'){
-        
-        createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role).then((user) => {
-            //si succés de la création d'un utilisateur renvoie d'un token jwt
-            const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
-            res.status(201).send({token});
-            res.end();
-        }).catch((err) => {
+       //vérifie que seul les roles autorisé dans le enum de Role est utilisé
+        if( parsedBody.role=='admin' || parsedBody.role=='user' || parsedBody.role=='employée'){
             
-            res.status(400).send("Error creating user");
+            createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role).then((user) => {
+                //si succés de la création d'un utilisateur renvoie d'un token jwt sinon c'est que l'utilisateur existe déjà
+                if(user){
+                    const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
+                    res.status(201).send({token});
+                    res.end(); 
+                }else{
+                    res.status(400).send("This email or username is already taken");
+                    res.end();
+                }
+                
+            }).catch((err) => {
+                
+                res.status(400).send("Error creating user",err.message);
+                res.end();
+            });
+        }else{
+            res.status(400).send("Invalid role");
             res.end();
-        });
+        }
     }else{
        
         createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user").then((user) => {
-            //si succés de la création d'un utilisateur renvoie d'un token jwt
-            
-            const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
-            
-            res.status(201).send({token});
-            
+            //si succés de la création d'un utilisateur renvoie d'un token jwt sinon c'est que l'utilisateur existe déjà
+           if(user){
+                const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
+                
+                res.status(201).send({token});
+                
+                res.end();
+           }else{
+            res.status(400).send("This email or username is already taken");
             res.end();
+           }
+            
         }).catch((err) => {
             
             res.status(400).send("Error creating user");
@@ -56,8 +75,7 @@ router.post('/login',(req,res)=>{
     Connected(body.email, body.password).then((user) => {       
         if(user){
             
-            const secret=fs.readFileSync(".env","utf8");
-           
+            
             const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
             res.status(200).send({token});
             res.end();  
