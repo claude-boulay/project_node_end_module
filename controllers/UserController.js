@@ -3,13 +3,16 @@ import fs from "fs";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-export function createUser(username,email, password) {
+export async function createUser(pseudo,email, password,role) {
     const hash=bcrypt.hashSync(password, 10);
-    const user={username,password:hash,email};
-    UsersModel.create(user).then(()=>
-    {return true;});
-    
+    const user={pseudo,password:hash,email,role};
+    //attente de la création en database de l'utilisateur
+    await UsersModel.create(user)
+    //recup de l'utilisateur créé
+    let Newuser=await UsersModel.findOne({email:email})
 
+    return Newuser;
+ 
 }
 
 export async function Connected(email, password){
@@ -34,7 +37,7 @@ export async function  getUser(id){
 }
 
 export async function deleteUser(id){
-    await UsersModel.findByIdAndUpdate(id, {deleteAt: new Date()  });
+    await UsersModel.findByIdAndDelete(id);
 }
 
 export async function updateUser(id,content){

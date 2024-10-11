@@ -4,16 +4,47 @@ import { getUser,updateUser,deleteUser,createUser,Connected } from '../controlle
 import jwt from 'jsonwebtoken';
 import { urlencoded } from 'express';
 import { authMiddleware } from '../middlewares/authMiddlewares.js';
+import { config } from 'dotenv';
+import { authOptionnelMiddlewares } from '../middlewares/authOptionnelMiddlewares.js';
+//obtention de la clé secret du fichier.env
+const secret= config().parsed.SECRET;
 
 const router = express.Router();
-
+router.use(authOptionnelMiddlewares);
 // User routes
 router.post('/register',(req,res)=>{
+    
     let parsedBody=req.body;
-   
-        createUser(parsedBody.username, parsedBody.email, parsedBody.password);
-        res.status(201).send("User created successfully");
-        res.end();
+    //si l'utilisateur est connecté et que l'utilisateur est admin, il peut créer un nouvel utilisateur avec le role désirée
+    //sinon l'utilisateur crée serat un utilisateur ordinaire
+    if(req.user!=false && req.user.role==='admin'){
+        
+        createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role).then((user) => {
+            //si succés de la création d'un utilisateur renvoie d'un token jwt
+            const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
+            res.status(201).send(token);
+            res.end();
+        }).catch((err) => {
+            console.log(err.message);
+            res.status(400).send("Error creating user");
+            res.end();
+        });
+    }else{
+       
+        createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user").then((user) => {
+            //si succés de la création d'un utilisateur renvoie d'un token jwt
+            console.log(user);
+            const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
+            res.status(201).send(token);
+            res.end();
+        }).catch((err) => {
+            console.log(err.message);
+            res.status(400).send("Error creating user");
+            res.end();
+        });
+    }
+        
+      
          
 
 });
@@ -25,8 +56,8 @@ router.post('/login',(req,res)=>{
             
             const secret=fs.readFileSync(".env","utf8");
            
-            const token=jwt.sign({id:user._id,username:user.username}, secret, { expiresIn: '1h' });
-          res.status(200).send(token);
+            const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
+            res.status(200).send(token);
             res.end();  
         }else{
             res.status(401).send({error: "Invalid credentials"});
@@ -41,13 +72,14 @@ router.post('/login',(req,res)=>{
 
 router.use(authMiddleware);
 router.get('/:id',(req,res)=>{
-    console.log(req.user);
-    if(req.user.id!=req.params.id){
+    
+    if(req.user.id!=req.params.id && req.user.role=="user"){
         res.status(403).send({error: "Forbidden you are not authorized to access this user's data. Only the owner can access his/her own data. "});
         res.end();  // stop the execution of the request and send a response with status code 403 (Forbidden) and a message in the response body
-        return;  // exit the function immediately without executing any remaining code
+          // exit the function immediately without executing any remaining code
     }else{
        getUser(req.params.id).then((user) => {
+        console.log(user);
         res.status(200).json(user);
         res.end();
     }).catch((err) => {
@@ -60,7 +92,7 @@ router.get('/:id',(req,res)=>{
 
 
 router.put('/:id',(req,res)=>{
-    if(req.user.id!=req.params.id){
+    if(req.user.id!=req.params.id && req.user.role!="admin"){
         res.status(403).send({error: "Forbidden you are not authorized to access this user's data. Only the owner can access his/her own data. "});
         res.end();  // stop the execution of the request and send a response with status code 403 (Forbidden) and a message in the response body
         return;  // exit the function immediately without executing any remaining code
