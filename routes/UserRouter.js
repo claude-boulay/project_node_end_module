@@ -11,7 +11,9 @@ import { validUser } from '../middlewares/validationUserMiddlewares.js';
 const secret= config().parsed.SECRET;
 
 const router = express.Router();
+//permet de savoir si l'utilisateur est connecté sur les routes ou c'est optionnel 
 router.use(authOptionnelMiddlewares);
+//vérifie que les donnée envoyée sont valide (email et password soumis à un regex etc...)
 router.use(validUser);
 // User routes
 router.post('/register',(req,res)=>{
