@@ -16,7 +16,7 @@ mongoose.connect(BdUrl).then((result) => {
 
 app.use(express.json());
 
-app.use("RailRoad/users", UserRouter);
+app.use("/RailRoad/users", UserRouter);
 
 app.use((req, res, next) => {
     res.status(404).send("Page not found");
