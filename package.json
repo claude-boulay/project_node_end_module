@@ -18,6 +18,7 @@
   "homepage": "https://github.com/claude-boulay/project_node_end_module#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
