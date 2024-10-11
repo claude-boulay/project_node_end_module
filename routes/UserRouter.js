@@ -22,10 +22,10 @@ router.post('/register',(req,res)=>{
         createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role).then((user) => {
             //si succés de la création d'un utilisateur renvoie d'un token jwt
             const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
-            res.status(201).send(token);
+            res.status(201).send({token});
             res.end();
         }).catch((err) => {
-            console.log(err.message);
+            
             res.status(400).send("Error creating user");
             res.end();
         });
@@ -33,12 +33,14 @@ router.post('/register',(req,res)=>{
        
         createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user").then((user) => {
             //si succés de la création d'un utilisateur renvoie d'un token jwt
-            console.log(user);
+            
             const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
-            res.status(201).send(token);
+            
+            res.status(201).send({token});
+            
             res.end();
         }).catch((err) => {
-            console.log(err.message);
+            
             res.status(400).send("Error creating user");
             res.end();
         });
@@ -57,7 +59,7 @@ router.post('/login',(req,res)=>{
             const secret=fs.readFileSync(".env","utf8");
            
             const token=jwt.sign({id:user._id,pseudo:user.pseudo,role:user.role}, secret, { expiresIn: '1h' });
-            res.status(200).send(token);
+            res.status(200).send({token});
             res.end();  
         }else{
             res.status(401).send({error: "Invalid credentials"});
@@ -79,7 +81,7 @@ router.get('/:id',(req,res)=>{
           // exit the function immediately without executing any remaining code
     }else{
        getUser(req.params.id).then((user) => {
-        console.log(user);
+        
         res.status(200).json(user);
         res.end();
     }).catch((err) => {
@@ -101,7 +103,7 @@ router.put('/:id',(req,res)=>{
             res.status(201).send("User updated successfully");
             res.end();
         }).catch((err) => {
-            res.status(400).send({error: "Invalid data "});
+            res.status(400).send({error: "Invalid data ", err: err.message});
             res.end();
         });
     }

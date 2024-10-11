@@ -41,8 +41,9 @@ export async function deleteUser(id){
 }
 
 export async function updateUser(id,content){
+    
     if(content.password){
-        content.password=bcrypt.hashSync(password, 10);
+        content.password=bcrypt.hashSync(content.password, 10);
     }
     
     await UsersModel.findByIdAndUpdate(id, {$set: content  });
