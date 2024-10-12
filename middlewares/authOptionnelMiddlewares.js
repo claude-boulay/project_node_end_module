@@ -8,10 +8,10 @@ export const authOptionnelMiddlewares = (req, res, next) => {
         const secret= config().parsed.SECRET;
         const token = auth?.split(" ")[1];
         if(token){
-           
             const decoded = jwt.verify(token, secret);
-            req.user = decoded; // Ajouter les informations de l'utilisateur décodées à la requête
-            
+
+            // Ajout des informations de l'utilisateur décodées à la requête
+            req.user = decoded; 
         }else{
             req.user = false;
         }
@@ -19,5 +19,4 @@ export const authOptionnelMiddlewares = (req, res, next) => {
             req.user = false;
         }
         next();
-    }
-    
+}
