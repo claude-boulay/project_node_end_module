@@ -3,19 +3,22 @@ import fs from "fs";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-export async function createUser(pseudo,email, password,role) {
-    const hash=bcrypt.hashSync(password, 10);
-    const user={pseudo,password:hash,email,role};
-    try {
+export async function createUser(pseudo, email, password, role) {
+    const hash = bcrypt.hashSync(password, 10);
+    const user = { pseudo, password: hash, email, role };
 
-        // Attente de la création en database de l'utilisateur
-        await UsersModel.create(user)
-        
-        // Récup de l'utilisateur créé
-        let Newuser=await UsersModel.findOne({email:email})
-        return Newuser; 
+    try {
+        const newUser = await UsersModel.create(user);
+        return newUser; 
     } catch (error) {
-        return false;
+        // Gestion des erreurs
+        if (error.name === 'ValidationError') {
+            throw new Error("Champs requis manquants : " + error.message);
+        }
+        if (error.code === 11000) {
+            throw new Error("Cet email ou pseudo est déjà pris");
+        }
+        throw new Error("Erreur lors de la création de l'utilisateur");
     }
 }
 

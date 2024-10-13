@@ -17,50 +17,31 @@ router.use(authOptionnelMiddlewares);
 router.use(validUser);
 
 // Routes des utilisateurs
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     let parsedBody = req.body;
 
-    // Si l'utilisateur est connecté et que l'utilisateur est admin, il peut créer un nouvel utilisateur avec le rôle désiré
-    // Sinon, l'utilisateur créé sera un utilisateur ordinaire
     if (req.user != false && req.user.role === 'admin') {
-
-        // Vérifie que seuls les rôles autorisés dans l'énum de Role sont utilisés
         if (parsedBody.role == 'admin' || parsedBody.role == 'user' || parsedBody.role == 'employée') {
-            createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role).then((user) => {
-
-                // Si succès de la création d'un utilisateur, renvoie un token JWT, sinon c'est que l'utilisateur existe déjà
-                if (user) {
-                    const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-                    res.status(201).send({ token });
-                    res.end();
-                } else {
-                    res.status(400).send("Cet email ou pseudo est déjà pris");
-                    res.end();
-                }
-            }).catch((err) => {
-                res.status(400).send("Erreur lors de la création de l'utilisateur", err.message);
-                res.end();
-            });
+            try {
+                const user = await createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role);
+                const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
+                return res.status(201).send({ token });
+            } catch (err) {
+                // Utilisation correcte de res.status()
+                return res.status(400).send("Erreur lors de la création de l'utilisateur: " + err.message);
+            }
         } else {
-            res.status(400).send("Rôle invalide");
-            res.end();
+            return res.status(400).send("Rôle invalide");
         }
     } else {
-        createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user").then((user) => {
-
-            // Si succès de la création d'un utilisateur, renvoie un token JWT, sinon c'est que l'utilisateur existe déjà
-            if (user) {
-                const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-                return res.status(201).send({ token, id: user._id });
-                res.end();
-            } else {
-                res.status(400).send("Cet email ou pseudo est déjà pris");
-                res.end();
-            }
-        }).catch((err) => {
-            res.status(400).send("Erreur lors de la création de l'utilisateur");
-            res.end();
-        });
+        try {
+            const user = await createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user");
+            const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
+            return res.status(201).send({ token, id: user._id });
+        } catch (err) {
+            // Utilisation correcte de res.status()
+            return res.status(400).send("Erreur lors de la création de l'utilisateur: " + err.message);
+        }
     }
 });
 

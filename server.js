@@ -10,11 +10,15 @@ const app = express();
 const Port = 3000;
 
 // Connexion à MongoDB
-mongoose.connect(BdUrl).then((result) => {
-    console.log("MongoDB connected");
-    // Démarrage du serveur une fois la connexion établie
-    const server = app.listen(Port, () => console.log(`Server running on port ${Port}`));
-});
+mongoose.connect(BdUrl)
+    .then(() => {
+        console.log("MongoDB connected");
+        const server = app.listen(Port, () => console.log(`Server running on port ${Port}`));
+    })
+    .catch((error) => {
+        console.error("MongoDB connection error:", error);
+        process.exit(1); // Arrêter le processus si la connexion échoue
+    });
 
 // Middleware pour parser le JSON dans les requêtes
 app.use(express.json());
