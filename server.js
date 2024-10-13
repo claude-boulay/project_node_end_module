@@ -19,6 +19,14 @@ mongoose.connect(BdUrl).then((result) => {
 // Middleware pour parser le JSON dans les requêtes
 app.use(express.json());
 
+// Middleware pour gérer les erreurs de syntaxe JSON
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).send({ error: 'Invalid JSON syntax' }); // Retourner un message d'erreur
+    }
+    next(); // Passer à la suite si ce n'est pas une erreur de syntaxe JSON
+});
+
 // Routes pour la gestion des utilisateurs
 app.use("/RailRoad/users", UserRouter);
 

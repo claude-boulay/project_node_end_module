@@ -11,7 +11,7 @@ export async function createUser(pseudo,email, password,role) {
         // Attente de la création en database de l'utilisateur
         await UsersModel.create(user)
         
-        // Recup de l'utilisateur créé
+        // Récup de l'utilisateur créé
         let Newuser=await UsersModel.findOne({email:email})
         return Newuser; 
     } catch (error) {
@@ -19,18 +19,24 @@ export async function createUser(pseudo,email, password,role) {
     }
 }
 
-export async function Connected(email, password){
-    const user =await UsersModel.findOne({email:email});
-    if(!user){
-        console.log("Email not found");
-        return false;
+export async function Connected(email, password) {
+    if (!password) {
+        throw new Error("Veuillez renseigner votre mot de passe");
     }
-    const success=bcrypt.compare(password, user.password)
-    if(success){
+
+    const user = await UsersModel.findOne({ email: email });
+
+    if (!user) {
+        throw new Error("Email non trouvé");
+    }
+
+    const success = await bcrypt.compare(password, user.password);
+
+    if (success) {
         return user;
-    }else{
-        return success; 
-    }       
+    } else {
+        throw new Error("Mot de passe invalide");
+    }
 }
 
 export async function  getUser(id){

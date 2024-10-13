@@ -51,7 +51,7 @@ router.post('/register', (req, res) => {
             // Si succès de la création d'un utilisateur, renvoie un token JWT, sinon c'est que l'utilisateur existe déjà
             if (user) {
                 const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-                res.status(201).send({ token });
+                return res.status(201).send({ token, id: user._id });
                 res.end();
             } else {
                 res.status(400).send("Cet email ou pseudo est déjà pris");
@@ -83,18 +83,22 @@ router.post('/login', (req, res) => {
 
 router.use(authMiddleware);
 router.get('/:id', (req, res) => {
-    if (req.user.id != req.params.id && req.user.role == "user") {
-        res.status(403).send({ error: "Interdit : vous n'êtes pas autorisé à accéder aux données de cet utilisateur. Seul le propriétaire peut accéder à ses propres données." });
-        
-        // Arrête l'exécution de la requête et envoie une réponse avec le code de statut 403 (Interdit) et un message dans le corps de la réponse
-        res.end();  
+    // Vérifie si l'utilisateur connecté n'est pas le propriétaire et n'est pas admin
+    if (req.user.id !== req.params.id && req.user.role === "user") {
+        return res.status(403).send({ 
+            error: "Interdit : vous n'êtes pas autorisé à accéder aux données de cet utilisateur. Seul le propriétaire peut accéder à ses propres données." 
+        });
     } else {
         getUser(req.params.id).then((user) => {
+            if (!user) {
+                // Si l'utilisateur n'existe pas, renvoie un message d'erreur
+                return res.status(404).send({ error: "Utilisateur inexistant" });
+            }
+            // Si l'utilisateur est trouvé, renvoie ses données
             res.status(200).json(user);
-            res.end();
         }).catch((err) => {
-            res.status(404).send({ error: "Utilisateur non trouvé" });
-            res.end();
+            // En cas d'erreur inattendue, renvoie une erreur générique
+            res.status(500).send({ error: "Erreur lors de la récupération de l'utilisateur" });
         });
     }
 });
