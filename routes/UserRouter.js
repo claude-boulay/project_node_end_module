@@ -17,31 +17,39 @@ router.use(authOptionnelMiddlewares);
 router.use(validUser);
 
 // Routes des utilisateurs
-router.post('/register', async (req, res) => {
+router.post('/register', validUser, (req, res) => {
     let parsedBody = req.body;
 
-    if (req.user != false && req.user.role === 'admin') {
-        if (parsedBody.role == 'admin' || parsedBody.role == 'user' || parsedBody.role == 'employée') {
-            try {
-                const user = await createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role);
-                const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-                return res.status(201).send({ token });
-            } catch (err) {
-                // Utilisation correcte de res.status()
-                return res.status(400).send("Erreur lors de la création de l'utilisateur: " + err.message);
-            }
+    if (req.user && req.user.role === 'admin') {
+        if (['admin', 'user', 'employée'].includes(parsedBody.role)) {
+            createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role)
+                .then((user) => {
+                    if (user) {
+                        const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
+                        return res.status(201).send({ token });
+                    } else {
+                        return res.status(400).send({ error: "Cet email ou pseudo est déjà pris." });
+                    }
+                })
+                .catch((err) => {
+                    return res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
+                });
         } else {
-            return res.status(400).send("Rôle invalide");
+            return res.status(400).send({ error: "Rôle invalide." });
         }
     } else {
-        try {
-            const user = await createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user");
-            const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-            return res.status(201).send({ token, id: user._id });
-        } catch (err) {
-            // Utilisation correcte de res.status()
-            return res.status(400).send("Erreur lors de la création de l'utilisateur: " + err.message);
-        }
+        createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user")
+            .then((user) => {
+                if (user) {
+                    const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
+                    return res.status(201).send({ token, id: user._id });
+                } else {
+                    return res.status(400).send({ error: "Cet email ou pseudo est déjà pris." });
+                }
+            })
+            .catch((err) => {
+                return res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
+            });
     }
 });
 

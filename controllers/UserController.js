@@ -13,7 +13,7 @@ export async function createUser(pseudo, email, password, role) {
     } catch (error) {
         // Gestion des erreurs
         if (error.name === 'ValidationError') {
-            throw new Error("Champs requis manquants : " + error.message);
+            throw new Error("Champs requis manquants");
         }
         if (error.code === 11000) {
             throw new Error("Cet email ou pseudo est déjà pris");
