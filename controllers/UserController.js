@@ -57,4 +57,3 @@ export async function updateUser(id,content){
     }
     await UsersModel.findByIdAndUpdate(id, {$set: content  });
 }
-

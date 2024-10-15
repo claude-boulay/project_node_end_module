@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 import YAML from 'yaml';
 import { Server } from "socket.io";
 import UserRouter from './routes/UserRouter.js';
+import TrainRouter from './routes/TrainRouter.js';
+import StationRouter from './routes/StationRouter.js';
+
 
 const BdUrl = "mongodb+srv://ClaudeB:Cyberbouffon5@cluster0.nc5na.mongodb.net/RailRoad";
 const app = express();
@@ -33,6 +36,12 @@ app.use((err, req, res, next) => {
 
 // Routes pour la gestion des utilisateurs
 app.use("/RailRoad/users", UserRouter);
+
+// Routes pour la gestion des trains
+app.use("/RailRoad/trains", TrainRouter);
+
+// Routes pour la gestion des station
+app.use("/RailRoad/stations", StationRouter);
 
 // Middleware pour gérer les routes non trouvées (404)
 app.use((req, res, next) => {
