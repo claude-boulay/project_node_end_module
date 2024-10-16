@@ -17,8 +17,13 @@ export async function getStationById(id) {
     return await StationsModel.findById(id);
 }
 
-export async function updateStation(id, content) {
-    await StationsModel.findByIdAndUpdate(id, { $set: content });
+export async function updateStation(id, content,filePath) {
+    if(filePath==null){
+       await StationsModel.findByIdAndUpdate(id, { $set: content }); 
+    }else{
+        await StationsModel.findByIdAndUpdate(id, { $set: content ,image: filePath });
+    }
+    return await getStationById(id);
 }
 
 export async function deleteStation(id) {

@@ -10,13 +10,15 @@ const router = express.Router();
 router.get('/', (req, res) => {
     // Récupère toutes les stations de la base de données
     // ...
-    getAllStations(req, res).then((stations) => {
-        res.status().json(stations);
+    getAllStations().then((stations) => {
+        res.status(200).json(stations);
+    }).catch((error) => {
+        res.status(500).json({ error: "Error getting stations"+error.message });
     });
    
 });
 
-router.post('/create',upload.single("file"), (req, res) => {
+router.post('/create',upload.single("image"), (req, res) => {
     // Crée une nouvelle station dans la base de données
     // ...
     
@@ -27,14 +29,14 @@ router.post('/create',upload.single("file"), (req, res) => {
     });
 });
 
-router.put("/:id",upload.single("file"),(req,res)=>{
+router.put("/:id",upload.single("image"),(req,res)=>{
     // Met à jour une station dans la base de données
     //...
     
     updateStation(req.params.id, req.body, req.file? req.file.path : null).then((station) => {
         res.status(200).json(station);
     }).catch((error) => {
-        res.status(500).json({error: "Error updating station"})
+        res.status(500).json({error: "Error updating station"+error.message});
     });
 })
 
