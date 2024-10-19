@@ -10,7 +10,7 @@ export function createStation(name, city, open_hour, close_hour, address, imageL
 }
 
 export async function getAllStations() {
-    return await StationsModel.find();
+    return await StationsModel.find().sort({name:"asc"});
 }
 
 export async function getStationById(id) {
@@ -18,6 +18,7 @@ export async function getStationById(id) {
 }
 
 export async function updateStation(id, content,filePath) {
+   
     if(filePath==null){
        await StationsModel.findByIdAndUpdate(id, { $set: content }); 
     }else{
