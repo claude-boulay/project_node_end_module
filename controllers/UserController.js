@@ -18,7 +18,7 @@ export async function createUser(pseudo, email, password, role) {
         if (error.code === 11000) {
             throw new Error("Cet email ou pseudo est déjà pris");
         }
-        throw new Error("Erreur lors de la création de l'utilisateur");
+        throw new Error("Erreur lors de la création de l'utilisateur"+error);
     }
 }
 

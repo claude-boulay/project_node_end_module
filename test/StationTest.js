@@ -19,19 +19,19 @@ describe("Stations routes", () => {
     describe("Test des droits d'un utilisateur lambda sur les stations", () => {
          before(async () => {
         // Création d'un utilisateur pour les tests
-        const response = await request.post("/RailRoad/users/register").send({
-            pseudo: "testuser",
-            email: "testuser@example.com",
-            password: "Password5@"
-        });
-        const token = response.body.token;
-        const decoded = jwt.verify(token, secret);
-        id = decoded.id; 
-        headers = {
+            const response = await request.post("/RailRoad/users/register").send({
+                pseudo: "testuser",
+                email: "testuser@example.com",
+                password: "Password5@"
+            });
+            const token = response.body.token;
+            const decoded = jwt.verify(token, secret);
+            id = decoded.id; 
+            headers = {
 
-            // Ajout du token dans les headers pour les requêtes suivantes
-            Authorization: `Bearer ${token}`,  
-        };
+                // Ajout du token dans les headers pour les requêtes suivantes
+                Authorization: `Bearer ${token}`,  
+            };
         });
         after(async () => {
             await User.findOneAndDelete({ email: "testuser@example.com" });
