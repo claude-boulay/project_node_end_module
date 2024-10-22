@@ -1,7 +1,11 @@
 import TrainModel from "../models/TrainModel.js";
 import mongoose from "mongoose";
 
+
 export async function createTrain(name, start_station, end_station, time_of_departure) {
+    //vérifier que time of departure sois bien d'un format ISO adéquat ex 2024-10-22T14:30:00
+    time_of_departure = new Date(time_of_departure);
+    
     const train = { name, start_station, end_station, time_of_departure };
 
     try {
@@ -10,7 +14,7 @@ export async function createTrain(name, start_station, end_station, time_of_depa
     } catch (error) {
         // Gestion des erreurs
         if (error.name === 'ValidationError') {
-            throw new Error("Champs requis manquants");
+            throw new Error("Champs requis manquants"+error);
         }
         throw new Error("Erreur lors de la création du train");
     }
@@ -48,4 +52,14 @@ export async function updateTrain(id, content) {
         throw new Error("Train non trouvé");
     }
     await TrainModel.findByIdAndUpdate(id, { $set: content }, { new: true });
+}
+
+export async function getTrainByStationId(id){
+    const trains = await TrainModel.find({
+        $or: [
+            { start_station: new mongoose.Types.ObjectId(id) },
+            { end_station: new mongoose.Types.ObjectId(id) }
+        ]
+    }) 
+    return trains;
 }

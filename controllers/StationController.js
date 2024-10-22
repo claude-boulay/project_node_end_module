@@ -1,6 +1,7 @@
 import fs from "fs";
 import mongoose from "mongoose";
 import StationsModel from "../models/StationModel.js";
+import { deleteTrain,getTrainByStationId } from "./TrainController.js";
 
 // Création en base de donnée de la station de train avec les données fournies
 // ImageLink doit correspondre au chemin de l'image enregistrer sur le server lors de la création
@@ -28,6 +29,18 @@ export async function updateStation(id, content,filePath) {
 }
 
 export async function deleteStation(id) {
-    await StationsModel.findByIdAndDelete(id);
-    // Ajouter la suppression de tout les trains relier à cette stations su start station or end stations
+    
+   
+    try{
+
+      let idsTrain=await getTrainByStationId(id);  
+      idsTrain.forEach(element => {
+        deleteTrain(element._id);
+      }); 
+      await StationsModel.findByIdAndDelete(id);
+    }catch(err){
+        console.log (err);
+    };
+    
+    
 }

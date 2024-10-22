@@ -11,7 +11,7 @@ router.post('/', authMiddleware, (req, res) => {
     }
 
     const { name, start_station, end_station, time_of_departure } = req.body;
-
+    
     createTrain(name, start_station, end_station, time_of_departure)
         .then(train => res.status(201).json(train))
         .catch(err => res.status(400).send({ error: "Erreur lors de la création du train", message: err.message }));

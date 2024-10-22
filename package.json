@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "user_test": "mocha ./test/UserTest.js",
-    "coverage": "nyc npm run test/Usertest.js"
+    "coverage": "nyc npm run test/Usertest.js",
+    "start":"node server.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "mongoose": "^8.7.1",
     "multer": "^1.4.5-lts.1",
     "npm": "^10.9.0",
+    "sharp": "^0.33.5",
     "socket.io": "^4.8.0",
     "supertest": "^7.0.0",
     "swagger-ui-express": "^5.0.1",
