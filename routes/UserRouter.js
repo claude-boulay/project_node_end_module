@@ -16,114 +16,196 @@ const router = express.Router();
 router.use(authOptionnelMiddlewares);
 router.use(validUser);
 
-// Routes des utilisateurs
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Gestion des utilisateurs
+ */
+
+/**
+ * @swagger
+ * /RailRoad/users/register:
+ *   post:
+ *     summary: Créer un nouvel utilisateur
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               pseudo:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Utilisateur créé avec succès
+ *       400:
+ *         description: Données invalides ou utilisateur déjà existant
+ */
 router.post('/register', validUser, (req, res) => {
     let parsedBody = req.body;
-
     if (req.user && req.user.role === 'admin') {
         if (['admin', 'user', 'employée'].includes(parsedBody.role)) {
             createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, parsedBody.role)
                 .then((user) => {
-                    if (user) {
-                        const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-                        return res.status(201).send({ token });
-                    } else {
-                        return res.status(400).send({ error: "Cet email ou pseudo est déjà pris." });
-                    }
+                    const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
+                    res.status(201).send({ token });
                 })
                 .catch((err) => {
-                    return res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
+                    res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
                 });
         } else {
-            return res.status(400).send({ error: "Rôle invalide." });
+            res.status(400).send({ error: "Rôle invalide." });
         }
     } else {
         createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user")
             .then((user) => {
-                if (user) {
-                    const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
-                    return res.status(201).send({ token, id: user._id });
-                } else {
-                    return res.status(400).send({ error: "Cet email ou pseudo est déjà pris." });
-                }
+                const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
+                res.status(201).send({ token, id: user._id });
             })
             .catch((err) => {
-                return res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
+                res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
             });
     }
 });
 
+/**
+ * @swagger
+ * /RailRoad/users/login:
+ *   post:
+ *     summary: Authentifier un utilisateur
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Authentification réussie, retourne un token
+ *       401:
+ *         description: Identifiants invalides
+ */
 router.post('/login', (req, res) => {
     let body = req.body;
-    Connected(body.email, body.password).then((user) => {
-        if (user) {
+    Connected(body.email, body.password)
+        .then((user) => {
             const token = jwt.sign({ id: user._id, pseudo: user.pseudo, role: user.role }, secret, { expiresIn: '1h' });
             res.status(200).send({ token });
-            res.end();
-        } else {
-            res.status(401).send({ error: "Identifiants invalides" });
-            res.end();
-        }
+        })
+        .catch((err) => {
+            res.status(401).send({ error: "Identifiants invalides", "admin": err.message });
+        });
+});
+
+/**
+ * @swagger
+ * /RailRoad/users/{id}:
+ *   get:
+ *     summary: Obtenir les détails d'un utilisateur
+ *     tags: [Users]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Détails de l'utilisateur retournés
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.get('/:id', (req, res) => {
+    getUser(req.params.id)
+        .then((user) => {
+            res.status(200).json(user);
+        })
+        .catch((err) => {
+            res.status(404).send({ error: "Utilisateur non trouvé" });
+        });
+});
+
+/**
+ * @swagger
+ * /RailRoad/users/{id}:
+ *   put:
+ *     summary: Mettre à jour les informations d'un utilisateur
+ *     tags: [Users]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               pseudo:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Informations de l'utilisateur mises à jour avec succès
+ *       400:
+ *         description: Données invalides
+ */
+router.put('/:id', (req, res) => {
+    updateUser(req.params.id, req.body).then(() => {
+        res.status(201).send("Utilisateur mis à jour avec succès");
     }).catch((err) => {
-        res.status(401).send({ error: "Identifiants invalides", "admin": err.message });
-        res.end();
+        res.status(400).send({ error: "Données invalides" });
     });
 });
 
-router.use(authMiddleware);
-router.get('/:id', (req, res) => {
-    // Vérifie si l'utilisateur connecté n'est pas le propriétaire et n'est pas admin
-    if (req.user.id !== req.params.id && req.user.role === "user") {
-        return res.status(403).send({ 
-            error: "Interdit : vous n'êtes pas autorisé à accéder aux données de cet utilisateur. Seul le propriétaire peut accéder à ses propres données." 
-        });
-    } else {
-        getUser(req.params.id).then((user) => {
-            if (!user) {
-                // Si l'utilisateur n'existe pas, renvoie un message d'erreur
-                return res.status(404).send({ error: "Utilisateur inexistant" });
-            }
-            // Si l'utilisateur est trouvé, renvoie ses données
-            res.status(200).json(user);
-        }).catch((err) => {
-            // En cas d'erreur inattendue, renvoie une erreur générique
-            res.status(500).send({ error: "Erreur lors de la récupération de l'utilisateur" });
-        });
-    }
-});
-
-router.put('/:id', (req, res) => {
-    if (req.user.id != req.params.id && req.user.role != "admin") {
-        res.status(403).send({ error: "Interdit : vous n'êtes pas autorisé à accéder aux données de cet utilisateur. Seul le propriétaire peut accéder à ses propres données." });
-        res.end();  
-        
-        // Quitte la fonction immédiatement sans exécuter de code restant
-        return;  
-    } else {
-        updateUser(req.params.id, req.body).then(() => {
-            res.status(201).send("Utilisateur mis à jour avec succès");
-            res.end();
-        }).catch((err) => {
-            res.status(400).send({ error: "Données invalides", err: err.message });
-            res.end();
-        });
-    }
-});
-
+/**
+ * @swagger
+ * /RailRoad/users/{id}:
+ *   delete:
+ *     summary: Supprimer un utilisateur
+ *     tags: [Users]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur à supprimer
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Utilisateur supprimé avec succès
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
 router.delete('/:id', (req, res) => {
-    if (req.user.id != req.params.id) {
-        res.status(403).send({ error: "Interdit : vous n'êtes pas autorisé à accéder aux données de cet utilisateur. Seul le propriétaire peut accéder à ses propres données." });
-        res.end(); 
-        return;
-    } else {
-        deleteUser(req.params.id).then(() => {
-            res.status(200).send("Utilisateur supprimé avec succès");
-            res.end();
-        }).catch((err) => {
-            res.status(404).send({ error: "Utilisateur non trouvé" });
-            res.end();
-        });
-    }
+    deleteUser(req.params.id).then(() => {
+        res.status(200).send("Utilisateur supprimé avec succès");
+    }).catch((err) => {
+        res.status(404).send({ error: "Utilisateur non trouvé", message: err.message });
+    });
 });
 
 export default router;

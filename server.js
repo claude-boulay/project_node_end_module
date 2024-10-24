@@ -6,11 +6,34 @@ import { Server } from "socket.io";
 import UserRouter from './routes/UserRouter.js';
 import TrainRouter from './routes/TrainRouter.js';
 import StationRouter from './routes/StationRouter.js';
-
+import swaggerUi from 'swagger-ui-express'; // Importer swagger-ui-express
+import swaggerJsDoc from 'swagger-jsdoc'; // Importer swagger-jsdoc
 
 const BdUrl = "mongodb+srv://ClaudeB:Cyberbouffon5@cluster0.nc5na.mongodb.net/RailRoad";
 const app = express();
 const Port = 3000;
+
+// Configuration de Swagger
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'RailRoad API',
+            version: '1.0.0',
+            description: 'Documentation de l\'API RailRoad',
+        },
+        servers: [
+            {
+                url: `http://localhost:3000/RailRoad`,
+            },
+        ],
+    },
+    apis: ['./routes/*.js'],
+};
+
+// Initialiser Swagger
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/RailRoad/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Route pour la documentation Swagger
 
 // Connexion à MongoDB
 mongoose.connect(BdUrl)
@@ -40,7 +63,7 @@ app.use("/RailRoad/users", UserRouter);
 // Routes pour la gestion des trains
 app.use("/RailRoad/trains", TrainRouter);
 
-// Routes pour la gestion des station
+// Routes pour la gestion des stations
 app.use("/RailRoad/stations", StationRouter);
 
 // Middleware pour gérer les routes non trouvées (404)
