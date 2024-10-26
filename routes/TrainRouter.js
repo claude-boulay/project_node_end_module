@@ -59,19 +59,20 @@ const router = express.Router();
  *         description: Erreur lors de la création du train
  */
 router.post('/', authMiddleware, async (req, res) => {
+    // Vérifie si l'utilisateur est un administrateur
     if (req.user.role !== 'admin') {
-        return res.status(403).send({ error: "Accès interdit : seul un administrateur peut créer un train." });
+        return res.status(403).send({ error: "Access denied: Only admin can create a train." });
     }
 
     try {
         const { name, start_station, end_station, time_of_departure } = req.body;
 
-        // // Vérification si les gares de départ et d'arrivée sont les mêmes
-        // if (start_station === end_station) {
-        //     return res.status(400).json({ error: "La gare de départ ne peut pas être la même que celle d'arrivée." });
-        // }
+        // Vérifie si les gares de départ et d'arrivée sont identiques
+        if (start_station === end_station) {
+            return res.status(400).json({ error: "Departure and arrival stations cannot be the same." });
+        }
 
-        // Vérification de l'existence d'un train avec le même nom (insensible à la casse), même station et même horaire
+        // Vérifie s'il existe déjà un train avec les mêmes informations
         const existingTrain = await TrainModel.findOne({ 
             name: { $regex: new RegExp(`^${name}$`, 'i') }, 
             start_station, 
@@ -80,16 +81,16 @@ router.post('/', authMiddleware, async (req, res) => {
         });
         
         if (existingTrain) {
-            return res.status(400).json({ error: "Un train avec le même nom, les mêmes stations et le même horaire existe déjà." });
+            return res.status(400).json({ error: "A train with the same name, stations, and schedule already exists." });
         }
 
         const train = await createTrain(name, start_station, end_station, time_of_departure);
         return res.status(201).json({ 
-            message: "Train créé avec succès",
-            id: train._id 
+            message: "Train successfully created",
+            id: train._id
         });
     } catch (err) {
-        return res.status(400).json({ error: "Erreur lors de la création du train", message: err.message });
+        return res.status(400).json({ error: "Error creating the train", message: err.message });
     }
 });
 
@@ -142,15 +143,24 @@ router.post('/', authMiddleware, async (req, res) => {
  *       500:
  *         description: Erreur lors de la récupération des trains
  */
-router.get('/', (req, res) => {
-    const { limit = 10, sortBy = 'time_of_departure', order = 'asc' } = req.query;
+router.get('/', async (req, res) => {
+    try {
+        const { limit = 10, sortBy = 'time_of_departure', order = 'asc' } = req.query;
 
-    const sort = {};
-    sort[sortBy] = order === 'asc' ? 1 : -1; // 1 pour ascendant, -1 pour descendant
+        const sort = {};
+        sort[sortBy] = order === 'asc' ? 1 : -1; // 1 pour ascendant, -1 pour descendant
 
-    getTrains(parseInt(limit), sort)
-        .then(trains => res.status(200).json(trains))
-        .catch(err => res.status(500).send({ error: "Erreur lors de la récupération des trains", message: err.message }));
+        // Récupération des trains depuis la base de données
+        const trains = await TrainModel.find()
+            .limit(parseInt(limit))
+            .sort(sort)
+            .populate('start_station')   // Récupère la station de départ
+            .populate('end_station');    // Récupère la station d'arrivée
+
+        res.status(200).json(trains);
+    } catch (err) {
+        res.status(500).send({ error: "Error fetching trains", message: err.message });
+    }
 });
 
 /**
@@ -191,9 +201,10 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     const { id } = req.params;
 
+    // Récupération du train par son ID
     getTrain(id)
         .then(train => res.status(200).json(train))
-        .catch(err => res.status(404).send({ error: "Train non trouvé", message: err.message }));
+        .catch(err => res.status(404).send({ error: "Train not found", message: err.message }));
 });
 
 /**
@@ -203,7 +214,7 @@ router.get('/:id', (req, res) => {
  *     summary: Mettre à jour un train
  *     tags: [Trains]
  *     security:
- *       - bearerAuth: []  # Si tu utilises une authentification par token
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -247,39 +258,51 @@ router.get('/:id', (req, res) => {
  *         description: Erreur lors de la mise à jour du train
  */
 router.put('/:id', authMiddleware, async (req, res) => {
+    // Vérifie si l'utilisateur est un administrateur
     if (req.user.role !== 'admin') {
-        return res.status(403).send({ error: "Accès interdit : seul un administrateur peut mettre à jour un train." });
+        return res.status(403).send({ error: "Access denied: Only admin can update a train." });
     }
 
     try {
         const { id } = req.params;
         const { name, start_station, end_station, time_of_departure } = req.body;
 
-        // // Vérification si les gares de départ et d'arrivée sont les mêmes
-        // if (start_station === end_station) {
-        //     return res.status(400).json({ error: "La gare de départ ne peut pas être la même que celle d'arrivée." });
-        // }
+        // Récupère les données actuelles du train
+        const existingTrainData = await TrainModel.findById(id);
+        if (!existingTrainData) {
+            return res.status(404).json({ error: "Train not found." });
+        }
 
-       // Vérification de l'existence d'un autre train avec le même nom, mêmes stations mais un horaire différent
-        const existingTrain = await TrainModel.findOne({ 
-        name: { $regex: new RegExp(`^${name}$`, 'i') }, 
-        start_station, 
-        end_station, 
-        time_of_departure: { $ne: time_of_departure },  // L'horaire doit être différent
-        _id: { $ne: id }  // Exclure le train actuel de la vérification
-    });
-    
-    if (existingTrain) {
-        return res.status(400).json({ error: "Un train avec le même nom, les mêmes stations et un horaire différent existe déjà." });
-    }
+        // Utilise les données actuelles si elles ne sont pas fournies dans la requête
+        const updatedName = name || existingTrainData.name;
+        const updatedStartStation = start_station || existingTrainData.start_station;
+        const updatedEndStation = end_station || existingTrainData.end_station;
+        const updatedTimeOfDeparture = time_of_departure || existingTrainData.time_of_departure;
 
-    const updatedTrain = await updateTrain(id, { name, start_station, end_station, time_of_departure });
-    return res.status(200).json({ 
-        message: "Train mis à jour avec succès",
-        id: updatedTrain._id 
-    });
+        // Vérifie si les gares de départ et d'arrivée sont identiques
+        if (updatedStartStation === updatedEndStation) {
+            return res.status(400).json({ error: "Departure and arrival stations cannot be the same." });
+        }
+
+        // Vérifie si un autre train avec les mêmes données existe déjà
+        const existingTrain = await TrainModel.findOne({
+            name: { $regex: new RegExp(`^${updatedName}$`, 'i') },
+            start_station: updatedStartStation,
+            end_station: updatedEndStation,
+            time_of_departure: updatedTimeOfDeparture,
+            _id: { $ne: id } // Exclut le train actuel de la recherche
+        });
+
+        if (existingTrain) {
+            return res.status(400).json({ error: "A train with the same name, stations, and schedule already exists." });
+        }
+
+        // Met à jour le train dans la base de données
+        const updatedTrain = await updateTrain(id, updatedName, updatedStartStation, updatedEndStation, updatedTimeOfDeparture);
+
+        res.status(200).json({ message: "Train successfully updated", id: updatedTrain._id });
     } catch (err) {
-        return res.status(400).json({ error: "Erreur lors de la mise à jour du train", message: err.message });
+        res.status(400).json({ error: "Error updating the train", message: err.message });
     }
 });
 
@@ -290,7 +313,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
  *     summary: Supprimer un train
  *     tags: [Trains]
  *     security:
- *       - bearerAuth: []  # Si tu utilises une authentification par token
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -312,19 +335,20 @@ router.put('/:id', authMiddleware, async (req, res) => {
  *         Accès interdit : seul un administrateur peur supprimer un train.
  *       404:
  *         description: Train non trouvé
+ *       400:
+ *         description: Erreur lors de la suppression du train
  */
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, (req, res) => {
+    // Vérifie si l'utilisateur est un administrateur
     if (req.user.role !== 'admin') {
-        return res.status(403).send({ error: "Accès interdit : seul un administrateur peut supprimer un train." });
+        return res.status(403).send({ error: "Access denied: Only admin can delete a train." });
     }
 
     const { id } = req.params;
-    try {
-        await deleteTrain(id);
-        return res.status(200).json({ message: "Train supprimé avec succès" });
-    } catch (err) {
-        return res.status(404).send({ error: "Train non trouvé", message: err.message });
-    }
+
+    deleteTrain(id)
+        .then(() => res.status(200).json({ message: "Train successfully deleted" }))
+        .catch(err => res.status(404).send({ error: "Train not found", message: err.message }));
 });
 
 export default router;

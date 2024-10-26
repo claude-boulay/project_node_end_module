@@ -7,6 +7,7 @@ import { authOptionnelMiddlewares } from '../middlewares/authOptionnelMiddleware
 import { validUser } from '../middlewares/validationUserMiddlewares.js';
 
 // Obtention de la clé secrète du fichier .env
+config(); 
 const secret = config().parsed.SECRET;
 
 // Permet de savoir si l'utilisateur est connecté sur les routes où cela est optionnel 
@@ -60,10 +61,10 @@ router.post('/register', validUser, (req, res) => {
                     res.status(201).send({ token });
                 })
                 .catch((err) => {
-                    res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
+                    res.status(400).send({ error: "Error creating the user", message: err.message });
                 });
         } else {
-            res.status(400).send({ error: "Rôle invalide." });
+            res.status(400).send({ error: "Invalid role." });
         }
     } else {
         createUser(parsedBody.pseudo, parsedBody.email, parsedBody.password, "user")
@@ -72,7 +73,7 @@ router.post('/register', validUser, (req, res) => {
                 res.status(201).send({ token, id: user._id });
             })
             .catch((err) => {
-                res.status(400).send({ error: "Erreur lors de la création de l'utilisateur", message: err.message });
+                res.status(400).send({ error: "Error creating the user", message: err.message });
             });
     }
 });
@@ -108,7 +109,7 @@ router.post('/login', (req, res) => {
             res.status(200).send({ token });
         })
         .catch((err) => {
-            res.status(401).send({ error: "Identifiants invalides", "admin": err.message });
+            res.status(401).send({ error: "Invalid data", "admin": err.message });
         });
 });
 
@@ -137,7 +138,7 @@ router.get('/:id', (req, res) => {
             res.status(200).json(user);
         })
         .catch((err) => {
-            res.status(404).send({ error: "Utilisateur non trouvé" });
+            res.status(404).send({ error: "User not found" });
         });
 });
 
@@ -175,9 +176,9 @@ router.get('/:id', (req, res) => {
  */
 router.put('/:id', (req, res) => {
     updateUser(req.params.id, req.body).then(() => {
-        res.status(201).send("Utilisateur mis à jour avec succès");
+        res.status(201).send("User successfully updated");
     }).catch((err) => {
-        res.status(400).send({ error: "Données invalides" });
+        res.status(400).send({ error: "Invalid data" });
     });
 });
 
@@ -202,9 +203,9 @@ router.put('/:id', (req, res) => {
  */
 router.delete('/:id', (req, res) => {
     deleteUser(req.params.id).then(() => {
-        res.status(200).send("Utilisateur supprimé avec succès");
+        res.status(200).send("User successfully deleted");
     }).catch((err) => {
-        res.status(404).send({ error: "Utilisateur non trouvé", message: err.message });
+        res.status(404).send({ error: "User not found", message: err.message });
     });
 });
 

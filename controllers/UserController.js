@@ -2,6 +2,7 @@ import UsersModel from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 
 export async function createUser(pseudo, email, password, role) {
+    // Hash du mot de passe avec bcrypt
     const hash = bcrypt.hashSync(password, 10);
     const user = { pseudo, password: hash, email, role };
 
@@ -11,14 +12,14 @@ export async function createUser(pseudo, email, password, role) {
 
 export async function Connected(email, password) {
     if (!password) {
-        throw new Error("Veuillez renseigner votre mot de passe");
+        throw new Error("Please provide your password");
     }
 
     // Recherche de l'utilisateur par email
     const user = await UsersModel.findOne({ email });
 
     if (!user) {
-        throw new Error("Email non trouvé");
+        throw new Error("Email not found");
     }
 
     // Comparaison du mot de passe
@@ -27,7 +28,7 @@ export async function Connected(email, password) {
     if (success) {
         return user;
     } else {
-        throw new Error("Mot de passe invalide");
+        throw new Error("Invalid password");
     }
 }
 

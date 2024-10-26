@@ -14,9 +14,9 @@ export async function createTrain(name, start_station, end_station, time_of_depa
     } catch (error) {
         // Gestion des erreurs
         if (error.name === 'ValidationError') {
-            throw new Error("Champs requis manquants"+error);
+            throw new Error("Required fields missing: " + error);
         }
-        throw new Error("Erreur lors de la création du train");
+        throw new Error("Error creating the train");
     }
 }
 
@@ -34,7 +34,7 @@ export async function getTrain(id) {
         .populate('start_station', 'name')
         .populate('end_station', 'name');
     if (!train) {
-        throw new Error("Train non trouvé");
+        throw new Error("Train not found");
     }
     return train;
 }
@@ -42,19 +42,20 @@ export async function getTrain(id) {
 export async function deleteTrain(id) {
     const result = await TrainModel.findByIdAndDelete(id);
     if (!result) {
-        throw new Error("Train non trouvé");
+        throw new Error("Train not found");
     }
 }
 
 export async function updateTrain(id, content) {
     const train = await TrainModel.findById(id);
     if (!train) {
-        throw new Error("Train non trouvé");
+        throw new Error("Train not found");
     }
 
     // Mettre à jour et retourner le train mis à jour
     const updatedTrain = await TrainModel.findByIdAndUpdate(id, { $set: content }, { new: true });
     return updatedTrain;
+    res.status(200).json(updatedTrain);
 }
 
 

@@ -6,6 +6,7 @@
   "scripts": {
     "user_test": "mocha ./test/UserTest.js",
     "station_test": "mocha ./test/StationTest.js",
+    "train_test": "mocha ./test/TrainTest.js",
     "coverage": "nyc npm run test/Usertest.js",
     "start": "node server.js"
   },
