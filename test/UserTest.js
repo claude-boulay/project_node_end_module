@@ -88,14 +88,14 @@ describe("User routes", () => {
                 password: "NewPassword5@"
             });
             expect(response.status).to.equal(201);
-            expect(response.text).to.be.equal("Utilisateur mis à jour avec succès");
+            expect(response.text).to.be.equal("User successfully updated");
         });
 
         // Test de la suppression d'un utilisateur
         it("Suppression d'un utilisateur", async () => {
             const response = await request.delete("/RailRoad/users/" + id).set(headers);
             expect(response.status).to.equal(200);
-            expect(response.text).to.be.equal("Utilisateur supprimé avec succès");
+            expect(response.text).to.be.equal("User successfully deleted");
         });
     });
 });
