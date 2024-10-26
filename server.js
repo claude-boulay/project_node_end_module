@@ -8,7 +8,7 @@ import TrainRouter from './routes/TrainRouter.js';
 import StationRouter from './routes/StationRouter.js';
 import swaggerUi from 'swagger-ui-express'; // Importer swagger-ui-express
 import swaggerJsDoc from 'swagger-jsdoc'; // Importer swagger-jsdoc
-
+import TicketRouter from './routes/TicketRouter.js';
 const BdUrl = "mongodb+srv://ClaudeB:Cyberbouffon5@cluster0.nc5na.mongodb.net/RailRoad";
 const app = express();
 const Port = 3000;
@@ -65,6 +65,9 @@ app.use("/RailRoad/trains", TrainRouter);
 
 // Routes pour la gestion des stations
 app.use("/RailRoad/stations", StationRouter);
+
+//routes pour la gestion des tickets
+app.use("/RailRoad/tickets", TicketRouter);
 
 // Middleware pour gérer les routes non trouvées (404)
 app.use((req, res, next) => {
