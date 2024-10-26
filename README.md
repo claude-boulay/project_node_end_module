@@ -15,15 +15,23 @@ Les utilisateurs doivent se connecter pour obtenir un **token** JWT, nécessaire
    - Exécutez **npm install** dans le terminal pour installer les dépendances.
    
 2. **Démarrer l'API**
-   - Exécutez **node server.js** dans le terminal.
+   - Exécutez **node server.js** OU **npm run start** dans le terminal. 
    - Attendez les messages de connexion à la base de données et d'écoute sur le port.
 
 3. **Tests des routes**
    - Utilisez PostMan pour tester les différentes routes. Vous pouvez également explorer la documentation Swagger disponible à l'URL :
    - **http://localhost:3000/RailRoad/api-docs**
 
+4. **Tests "manuels" des fonctionnalité**
+   - Utilisez les commandes suivantes afin de tester certaines fonctionnalités de l'API      directement dans votre terminal : 
+   - user_test (teste les fonctionnalités des utilisateurs)
+  - station_test (teste les fonctionnalités des stations)
+  - train_test (teste certaines fonctionnalités des trains)
+
 ## Gestion des erreurs
 L'API inclut une gestion des erreurs qui renvoie des messages appropriés en cas de problème, facilitant ainsi le diagnostic des requêtes.
 
 ## Création d'un utilisateur admin
-Si vous souhaitez créer un utilisateur ayant comme rôle "admin", il vous faudra être connecté à l'API avec un compte admin existant et ajouter la token de cette connexion à l'entête de votre requête HTTP (section header) avec les données suivantes : "Key : Authorization, Value : {{votre token admin}}. 
+Si vous souhaitez créer un utilisateur ayant comme rôle "admin", il vous faudra être connecté à l'API avec un compte **admin existant** et ajouter la token de cette connexion à l'entête de votre requête HTTP (section header) avec les données suivantes : "Key : Authorization, Value : {{votre token admin}}. 
+
+**Compte administrateur existant :** claude@gmail.com, Mot de passe :  RailRoadAdmin1@
