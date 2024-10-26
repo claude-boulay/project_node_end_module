@@ -28,6 +28,10 @@ Les utilisateurs doivent se connecter pour obtenir un **token** JWT, nécessaire
   - station_test (teste les fonctionnalités des stations)
   - train_test (teste certaines fonctionnalités des trains)
 
+5. **Postman**
+   -un fichier Postman en json nommée RailRoad.json est disponibles à la racine du projet
+   -Les routes existantes sont toutes présentes dedans avec des examples sur certaine route
+
 ## Gestion des erreurs
 L'API inclut une gestion des erreurs qui renvoie des messages appropriés en cas de problème, facilitant ainsi le diagnostic des requêtes.
 

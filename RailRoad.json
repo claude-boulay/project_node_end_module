@@ -1,0 +1,712 @@
+{
+	"info": {
+		"_postman_id": "ada22259-cd48-4980-92cd-de1cd79b05b8",
+		"name": "RailRoad",
+		"description": "Projet afin de créer des trains,stations et les reliées au utiliseurs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38760438"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "CreateUsers",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pseudo\":\"test\",\r\n    \"email\":\"test@gmail.com\",\r\n    \"role\":\"employée\",\r\n    \"password\":\"test@123RT\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/RailRoad/users/register",
+						"description": "crée un utilisateur si on veut un role autre que user il faudrat être connectée en tant qu'admin le mot de passe doit posséder 1 minuscule,1majuscule,1chiffre,1caractère spéciaux et faire aux moins 8 caractères"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"claude@gmail.com\",\r\n    \"password\":\"RailRoadAdmin1@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/RailRoad/users/login",
+						"description": "permet en envoyant le mail et le mot de passe de pouvoir recevoir un token a passer dans le header de certaines requêtes."
+					},
+					"response": []
+				},
+				{
+					"name": "GetOne",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "670906c0909b1e1a0361530c"
+								}
+							]
+						},
+						"description": "Obtention d'un utilisateurs par son id"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOne",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pseudo\":\"claude\",\r\n    \"email\":\"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6708ee0fc0a4812ed46daa6e"
+								}
+							]
+						},
+						"description": "mise à jour d'un utilisateurs via son id le token doit contenir la même id utilisateur ou le role admin"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteOne",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						},
+						"description": "Supprime un utilisateurs via son id uniquement si le token fourni avec corresponds a l'id"
+					},
+					"response": []
+				}
+			],
+			"description": "gestion des routes utilisateurs"
+		},
+		{
+			"name": "Stations",
+			"item": [
+				{
+					"name": "CreateStation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/boula/Downloads/INV_2024_00005_proforma.pdf"
+								},
+								{
+									"key": "name",
+									"value": "villefranche",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Villefranche-sur-cher",
+									"type": "text"
+								},
+								{
+									"key": "open_hour",
+									"value": "8:00",
+									"type": "text"
+								},
+								{
+									"key": "close_hour",
+									"value": "21:00",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "3 place des kalamars",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": "http://localhost:3000/RailRoad/stations/create",
+						"description": "crée une stations avec une image,un nom, une ville, les heures d'ouverture et une adresse"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:3000/RailRoad/stations",
+						"description": "permets la visualisations de toutes les gares (stations)"
+					},
+					"response": []
+				},
+				{
+					"name": "GetOne",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/stations/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"stations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						},
+						"description": "permets la visualisations d'une stations via son id"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOne",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/boula/Documents/swagger.yaml"
+								},
+								{
+									"key": "name",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Tours",
+									"type": "text"
+								},
+								{
+									"key": "open_hour",
+									"value": "9:00",
+									"type": "text"
+								},
+								{
+									"key": "close_hour",
+									"value": "17:00",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "25 rue pont volant",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/stations/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"stations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						},
+						"description": "mets à jours les données d'une station identifiée par id"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteOne",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/stations/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"stations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6717583273bf833803cc5703"
+								}
+							]
+						},
+						"description": "suppression d'une stations via son id"
+					},
+					"response": []
+				}
+			],
+			"description": "gestions des routes des stations"
+		},
+		{
+			"name": "Trains",
+			"item": [
+				{
+					"name": "CreateTrain",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"direction Tours\",\r\n    \"start_station\":\"6717583273bf833803cc5703\",\r\n    \"end_station\":\"6717525ff9c5d5597fe74e76\",\r\n    \"time_of_departure\":\"2024-10-22T14:30:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/RailRoad/trains",
+						"description": "creation d'un trains avec un nom, une gare de départ et d'arrivée et l'heure+jour de départ"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/trains",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"trains"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "Bearer {{token}}",
+									"disabled": true
+								}
+							]
+						},
+						"description": "visualisations de tous les trains possible sans être connectées"
+					},
+					"response": []
+				},
+				{
+					"name": "GetOne",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/trains/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"trains",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "671cd713c0b0c1b19a6bdc09"
+								}
+							]
+						},
+						"description": "visualisations d'un trains via son id possible sans être connectées"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOne",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"upload direction Tours\",\r\n    \"start_station\":\"6717583273bf833803cc5703\",\r\n    \"end_station\":\"6717525ff9c5d5597fe74e76\",\r\n    \"time_of_departure\":\"2024-10-22T14:30:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/trains/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"trains",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "671cd713c0b0c1b19a6bdc09"
+								}
+							]
+						},
+						"description": "mise à jours des données d'un train via son id"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteOne",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/trains/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"trains",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "671cd713c0b0c1b19a6bdc09"
+								}
+							]
+						},
+						"description": "suppression d'un train via son id"
+					},
+					"response": []
+				}
+			],
+			"description": "gestions des trains"
+		},
+		{
+			"name": "Ticket",
+			"item": [
+				{
+					"name": "CreateTicket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"trainId\":\"671cd713c0b0c1b19a6bdc09\",\r\n    \"classe\":2,\r\n    \"price\":\"18.25\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/RailRoad/tickets/",
+						"description": "création d'un ticket avec l'id de l'utilisateurs connectées dans le token, l'id du train sélectionnées, le prix et si il voyage en 1erclasse ou en 2ème"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllTicketForOneUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:3000/RailRoad/tickets/",
+						"description": "permets de récupérée tous les tickets de l'utilisateurs connectées via son token"
+					},
+					"response": []
+				},
+				{
+					"name": "ConfirmTicket",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/tickets/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"tickets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "671ce1bec2f555cfaffdbea1"
+								}
+							]
+						},
+						"description": "permets d'envoyée la demandes de confirmations du tickets lors du (paiement par exemple)"
+					},
+					"response": []
+				},
+				{
+					"name": "CancelTicket",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/RailRoad/tickets/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RailRoad",
+								"tickets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "671cea20ad230ed69f7b1c20"
+								}
+							]
+						},
+						"description": "permets d'annuler son tickets via son id en le supprimant de la base de données"
+					},
+					"response": []
+				}
+			],
+			"description": "gestions des tickets"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
