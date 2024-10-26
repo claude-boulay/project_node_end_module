@@ -2,6 +2,9 @@
 
 Ce projet est une API de gestion de train et de station. Elle permet à certains utilisateurs de faire des actions sur les trains et/ou les stations en fonction de leur **rôle**. Grâce à ces rôles, les utilisateurs auront plus ou moins de droits sur les trains/stations.
 
+## Auteurs de cette API 
+Cette API a été crée par Claude Boulay et Steven Coublant, étudiant en 3ème année à l'école Supinfo.
+
 ## Actions possibles sur les trains et les stations :
 - **CRUD :**
   - Tous les utilisateurs : Read.

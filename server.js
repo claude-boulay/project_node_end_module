@@ -1,3 +1,5 @@
+// Author : Claude Boulay & Steven Coublant
+
 import express from 'express';
 import fs from "fs";
 import mongoose from 'mongoose';
